@@ -1,8 +1,11 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
 import Categories from "./Components/Categories";
 import AllStores from "./Components/AllStores";
+import StoreDetails from "./Components/StoreDetails"; // 👈 import StoreDetails
 
 const user = {
   name: "Tom Cook",
@@ -11,7 +14,7 @@ const user = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 
-const navigation = [{ name: "Stores", href: "#", current: true }];
+const navigation = [{ name: "Stores", href: "/", current: true }];
 const userNavigation = [];
 
 function classNames(...classes) {
@@ -19,29 +22,39 @@ function classNames(...classes) {
 }
 
 export default function App() {
+  // State for selected category
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Function to update selected category
+  const updateCategory = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <Disclosure as="nav" className="bg-white shadow-md sticky top-0 z-50">
+      {/* Navbar */}
+      <Disclosure as="nav" className="bg-white shadow sticky top-0 z-50">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 justify-between items-center">
-                <div className="flex items-center">
+              <div className="flex justify-between h-16 items-center">
+                {/* Left: Logo + Navigation */}
+                <div className="flex items-center space-x-4">
                   <img
                     className="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    alt="Your Company"
+                    alt="Logo"
                   />
-                  <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                  <div className="hidden sm:flex space-x-4">
                     {navigation.map((item) => (
                       <a
                         key={item.name}
                         href={item.href}
                         className={classNames(
                           item.current
-                            ? "border-indigo-500 text-indigo-600"
-                            : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                          "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
+                            ? "text-indigo-600 border-b-2 border-indigo-500"
+                            : "text-gray-600 hover:text-gray-800 hover:border-gray-300",
+                          "text-sm font-medium px-3 py-2"
                         )}
                       >
                         {item.name}
@@ -50,18 +63,19 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Right: Icons & Profile */}
                 <div className="flex items-center space-x-4">
-                  <button className="p-1 text-gray-400 hover:text-gray-600 transition">
+                  <button className="text-gray-400 hover:text-gray-600 transition">
                     <BellIcon className="h-6 w-6" />
                   </button>
                   <Menu as="div" className="relative">
-                    <Menu.Button className="flex items-center space-x-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <Menu.Button className="flex items-center space-x-2">
                       <img
                         className="h-8 w-8 rounded-full"
                         src={user.imageUrl}
-                        alt=""
+                        alt={user.name}
                       />
-                      <span className="hidden sm:block font-medium text-gray-700">
+                      <span className="hidden sm:block text-sm text-gray-700 font-medium">
                         {user.name}
                       </span>
                     </Menu.Button>
@@ -74,30 +88,36 @@ export default function App() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-                        {userNavigation.map((item) => (
-                          <Menu.Item key={item.name}>
-                            {({ active }) => (
-                              <a
-                                href={item.href}
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
-                                )}
-                              >
-                                {item.name}
-                              </a>
-                            )}
-                          </Menu.Item>
-                        ))}
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {userNavigation.length === 0 ? (
+                          <div className="px-4 py-2 text-sm text-gray-500">
+                            No actions
+                          </div>
+                        ) : (
+                          userNavigation.map((item) => (
+                            <Menu.Item key={item.name}>
+                              {({ active }) => (
+                                <a
+                                  href={item.href}
+                                  className={classNames(
+                                    active ? "bg-gray-100" : "",
+                                    "block px-4 py-2 text-sm text-gray-700"
+                                  )}
+                                >
+                                  {item.name}
+                                </a>
+                              )}
+                            </Menu.Item>
+                          ))
+                        )}
                       </Menu.Items>
                     </Transition>
                   </Menu>
                 </div>
 
                 {/* Mobile menu button */}
-                <div className="-mr-2 flex items-center sm:hidden">
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500">
+                <div className="-mr-2 flex sm:hidden">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
                     {open ? (
                       <XMarkIcon className="h-6 w-6" />
                     ) : (
@@ -108,8 +128,9 @@ export default function App() {
               </div>
             </div>
 
+            {/* Mobile nav links */}
             <Disclosure.Panel className="sm:hidden">
-              <div className="space-y-1 px-4 pb-3 pt-2">
+              <div className="space-y-1 px-2 pt-2 pb-3">
                 {navigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
@@ -118,8 +139,8 @@ export default function App() {
                     className={classNames(
                       item.current
                         ? "bg-indigo-50 border-indigo-500 text-indigo-700"
-                        : "border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-800",
-                      "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-800",
+                      "block border-l-4 pl-3 pr-4 py-2 text-base font-medium"
                     )}
                   >
                     {item.name}
@@ -131,26 +152,33 @@ export default function App() {
         )}
       </Disclosure>
 
-      {/* Content Area */}
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
-            🏬 Stores Gallery
-          </h1>
+      {/* Routes */}
+      <Routes>
+        {/* Home - Store Listing */}
+        <Route
+          path="/"
+          element={
+            <main className="py-10">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-6">
+                  🏬 Stores Gallery
+                </h1>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                  <div className="lg:col-span-1">
+                    <Categories updateCategory={updateCategory} />
+                  </div>
+                  <div className="lg:col-span-3">
+                    <AllStores selectedCategory={selectedCategory} />
+                  </div>
+                </div>
+              </div>
+            </main>
+          }
+        />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Sidebar (Enable when needed) */}
-            {/* <div className="lg:col-span-1">
-              <Categories />
-            </div> */}
-
-            {/* Right Content */}
-            <div className="lg:col-span-3">
-              <AllStores />
-            </div>
-          </div>
-        </div>
-      </main>
+        {/* Store Details Page */}
+        <Route path="/store/:id" element={<StoreDetails />} />
+      </Routes>
     </div>
   );
 }
