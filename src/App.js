@@ -1,11 +1,11 @@
 import { Fragment, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Categories from "./Components/Categories";
 import AllStores from "./Components/AllStores";
-import StoreDetails from "./Components/StoreDetails"; // 👈 import StoreDetails
+import StoreDetails from "./Components/StoreDetails";
 
 const user = {
   name: "Tom Cook",
@@ -22,10 +22,8 @@ function classNames(...classes) {
 }
 
 export default function App() {
-  // State for selected category
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Function to update selected category
   const updateCategory = (category) => {
     setSelectedCategory(category);
   };
@@ -40,16 +38,18 @@ export default function App() {
               <div className="flex justify-between h-16 items-center">
                 {/* Left: Logo + Navigation */}
                 <div className="flex items-center space-x-4">
-                  <img
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    alt="Logo"
-                  />
+                  <Link to="/">
+                    <img
+                      className="h-8 w-auto"
+                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                      alt="Logo"
+                    />
+                  </Link>
                   <div className="hidden sm:flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
-                        href={item.href}
+                        to={item.href}
                         className={classNames(
                           item.current
                             ? "text-indigo-600 border-b-2 border-indigo-500"
@@ -58,7 +58,7 @@ export default function App() {
                         )}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -134,8 +134,8 @@ export default function App() {
                 {navigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
-                    as="a"
-                    href={item.href}
+                    as={Link}
+                    to={item.href}
                     className={classNames(
                       item.current
                         ? "bg-indigo-50 border-indigo-500 text-indigo-700"
@@ -154,7 +154,7 @@ export default function App() {
 
       {/* Routes */}
       <Routes>
-        {/* Home - Store Listing */}
+        {/* Store Listing Home Page */}
         <Route
           path="/"
           element={
@@ -176,7 +176,7 @@ export default function App() {
           }
         />
 
-        {/* Store Details Page */}
+        {/* Store Detail Route */}
         <Route path="/store/:id" element={<StoreDetails />} />
       </Routes>
     </div>

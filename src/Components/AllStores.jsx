@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaBookmark, FaRegBookmark, FaArrowUp } from "react-icons/fa";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-const AllStores = ({ className }) => {
+const AllStores = ({ className, selectedCategory }) => {
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -13,18 +13,32 @@ const AllStores = ({ className }) => {
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate(); // ✅ Place it here
+  const navigate = useNavigate();
 
-  const [sortOption, setSortOption] = useState(searchParams.get("sort") || "default");
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || null);
-  const [alphabetFilter, setAlphabetFilter] = useState(searchParams.get("alpha") || null);
-  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
-  const [cashbackFilter, setCashbackFilter] = useState(searchParams.get("cashback") === "1");
-  const [promotedFilter, setPromotedFilter] = useState(searchParams.get("promoted") === "1");
-  const [shareableFilter, setShareableFilter] = useState(searchParams.get("shareable") === "1");
-  const [bookmarkedFilter, setBookmarkedFilter] = useState(searchParams.get("bookmarked") === "1");
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
-
+  const [sortOption, setSortOption] = useState(
+    searchParams.get("sort") || "default"
+  );
+  const [alphabetFilter, setAlphabetFilter] = useState(
+    searchParams.get("alpha") || null
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || ""
+  );
+  const [cashbackFilter, setCashbackFilter] = useState(
+    searchParams.get("cashback") === "1"
+  );
+  const [promotedFilter, setPromotedFilter] = useState(
+    searchParams.get("promoted") === "1"
+  );
+  const [shareableFilter, setShareableFilter] = useState(
+    searchParams.get("shareable") === "1"
+  );
+  const [bookmarkedFilter, setBookmarkedFilter] = useState(
+    searchParams.get("bookmarked") === "1"
+  );
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || ""
+  );
 
   const observer = useRef();
   const limit = 6;
@@ -131,9 +145,20 @@ const AllStores = ({ className }) => {
 
   useEffect(() => {
     getStores(page === 1);
-  }, [page, sortOption, selectedCategory, alphabetFilter, statusFilter, cashbackFilter, promotedFilter, shareableFilter, searchTerm, bookmarkedFilter, bookmarkedStores]);
+  }, [
+    page,
+    sortOption,
+    selectedCategory,
+    alphabetFilter,
+    statusFilter,
+    cashbackFilter,
+    promotedFilter,
+    shareableFilter,
+    searchTerm,
+    bookmarkedFilter,
+    bookmarkedStores,
+  ]);
 
-  // Scroll to top logic
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -148,7 +173,6 @@ const AllStores = ({ className }) => {
 
   return (
     <div className={`my-6 px-4 ${className}`}>
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-3xl font-bold text-slate-800">All Stores</h2>
         <div className="flex flex-wrap gap-4 items-center">
@@ -175,7 +199,6 @@ const AllStores = ({ className }) => {
           <button
             onClick={() => {
               setSortOption("default");
-              setSelectedCategory(null);
               setAlphabetFilter(null);
               setStatusFilter("");
               setCashbackFilter(false);
@@ -195,7 +218,6 @@ const AllStores = ({ className }) => {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-4">
         <select
           value={statusFilter}
@@ -245,14 +267,15 @@ const AllStores = ({ className }) => {
         </label>
       </div>
 
-      {/* Alphabet Filter */}
       <div className="flex flex-wrap gap-2 mb-6">
         {["0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].map((char) => (
           <button
             key={char}
             onClick={() => setAlphabetFilter(char)}
             className={`px-3 py-1 rounded-md border text-sm font-medium ${
-              alphabetFilter === char ? "bg-slate-800 text-white" : "bg-white text-slate-800"
+              alphabetFilter === char
+                ? "bg-slate-800 text-white"
+                : "bg-white text-slate-800"
             } hover:bg-slate-100 transition`}
           >
             {char}
@@ -266,7 +289,6 @@ const AllStores = ({ className }) => {
         </button>
       </div>
 
-      {/* Store Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 relative">
         {stores.length > 0 ? (
           stores.map((store, idx) => {
@@ -292,7 +314,9 @@ const AllStores = ({ className }) => {
                     alt={store.name}
                     className="w-24 h-24 object-contain mb-4"
                   />
-                  <h3 className="text-lg font-semibold text-slate-800">{store.name}</h3>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    {store.name}
+                  </h3>
                   <p
                     className={`text-sm mt-1 ${
                       store.cashback_enabled === 1
@@ -304,30 +328,35 @@ const AllStores = ({ className }) => {
                       ? `Up to ${store.cashback_percent}% Cashback`
                       : store.cashback_text
                       ? store.cashback_text
-                      : "No cashback."}
+                      : "No cashback."
+                    }
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">Visits: {store.visits || 0}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Visits: {store.visits || 0}
+                  </p>
                   <button
-  onClick={() => navigate(`/store/${store.id}`)}
-  className="bg-slate-800 text-white px-4 py-2 rounded-md mt-4 text-sm w-full hover:bg-slate-700"
->
-  Shop Now
-</button>
-
+                    onClick={() => navigate(`/store/${store.id}`)}
+                    className="bg-slate-800 text-white px-4 py-2 rounded-md mt-4 text-sm w-full hover:bg-slate-700"
+                  >
+                    Shop Now
+                  </button>
                 </div>
               </div>
             );
           })
         ) : (
-          <p className="text-center col-span-4 text-slate-500">No stores found</p>
+          <p className="text-center col-span-4 text-slate-500">
+            No stores found
+          </p>
         )}
       </div>
 
       {!hasMore && (
-        <p className="text-center text-slate-500 mt-4">No more stores to load</p>
+        <p className="text-center text-slate-500 mt-4">
+          No more stores to load
+        </p>
       )}
 
-      {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
