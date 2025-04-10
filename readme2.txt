@@ -6,6 +6,8 @@ This is a simple app made with React that shows a list of stores. You can sort t
 Where to Find the Code
 You can see all the code here: https://github.com/onkar-singh-duggal/internship-task
 
+setup and whole project in video -https://app.usebubbles.com/ny6WtVgooKxudTBgigBnSN
+
 How to Set Up and Run the Project
 
 Things You Need First
